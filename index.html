@@ -4,12 +4,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>贪食蛇游戏</title>
+  <title>贪食蛇游戏优化版</title>
   <style>
     body {
       margin: 0;
       padding: 0;
       overflow: hidden;
+      transform: translateZ(0);
     }
 
     canvas {
@@ -33,8 +34,8 @@
 
     // 生成食物的位置
     function generateFood() {
-      let x = Math.floor(Math.random() * canvas.width / 10) * 10;
-      let y = Math.floor(Math.random() * canvas.height / 10) * 10;
+      let x = (Math.random() * canvas.width / 10) | 0 * 10;
+      let y = (Math.random() * canvas.height / 10) | 0 * 10;
       return { x, y };
     }
 
@@ -49,9 +50,10 @@
       ctx.fillRect(food.x, food.y, 10, 10);
     }
 
-    // 更新蛇的位置，实现可穿过边界功能
+    // 更新蛇的位置，实现可穿过边界功能并降低速度
+    let speedReducer = 2;
     function update() {
-      let head = { x: snake[0].x + dx, y: snake[0].y + dy };
+      let head = { x: snake[0].x + dx / speedReducer, y: snake[0].y + dy / speedReducer };
       if (head.x < 0) {
         head.x = canvas.width - 10;
       } else if (head.x >= canvas.width) {
@@ -102,8 +104,9 @@
 
     // 检查是否碰到自身
     function checkCollision() {
+      const head = snake[0];
       for (let i = 1; i < snake.length; i++) {
-        if (snake[i].x === snake[0].x && snake[i].y === snake[0].y) {
+        if (head.x === snake[i].x && head.y === snake[i].y) {
           return true;
         }
       }
@@ -118,7 +121,7 @@
         return;
       }
       draw();
-      setTimeout(gameLoop, 100);
+      requestAnimationFrame(gameLoop);
     }
 
     gameLoop();
