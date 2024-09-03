@@ -16,11 +16,29 @@
         canvas {
             background-color: #000;
         }
+
+       .controls {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+        }
+
+       .controls button {
+            width: 40px;
+            height: 40px;
+            margin: 5px;
+        }
     </style>
 </head>
 
 <body>
     <canvas id="gameCanvas" width="400" height="400"></canvas>
+    <div class="controls">
+        <button id="upBtn">↑</button>
+        <button id="downBtn">↓</button>
+        <button id="leftBtn">←</button>
+        <button id="rightBtn">→</button>
+    </div>
     <script>
         // 游戏画布和上下文
         const canvas = document.getElementById('gameCanvas');
@@ -77,32 +95,28 @@
         }
 
         // 控制蛇的移动
-        document.addEventListener('keydown', function (event) {
-            switch (event.keyCode) {
-                case 37: // 左
-                    if (dx!== 10) {
-                        dx = -10;
-                        dy = 0;
-                    }
-                    break;
-                case 38: // 上
-                    if (dy!== 10) {
-                        dx = 0;
-                        dy = -10;
-                    }
-                    break;
-                case 39: // 右
-                    if (dx!== -10) {
-                        dx = 10;
-                        dy = 0;
-                    }
-                    break;
-                case 40: // 下
-                    if (dy!== -10) {
-                        dx = 0;
-                        dy = 10;
-                    }
-                    break;
+        document.getElementById('upBtn').addEventListener('click', () => {
+            if (dy!== 10) {
+                dx = 0;
+                dy = -10;
+            }
+        });
+        document.getElementById('downBtn').addEventListener('click', () => {
+            if (dy!== -10) {
+                dx = 0;
+                dy = 10;
+            }
+        });
+        document.getElementById('leftBtn').addEventListener('click', () => {
+            if (dx!== 10) {
+                dx = -10;
+                dy = 0;
+            }
+        });
+        document.getElementById('rightBtn').addEventListener('click', () => {
+            if (dx!== -10) {
+                dx = 10;
+                dy = 0;
             }
         });
 
