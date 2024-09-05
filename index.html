@@ -119,12 +119,17 @@
     }
 
     // 绘制半透明按键
-    function drawButtons() {
+     function drawButtons() 
+     {
       ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-      ctx.fillRect(canvas.width - 30, canvas.height - 30, 20, 20); // 上
-      ctx.fillRect(canvas.width - 50, canvas.height - 10, 20, 20); // 左
-      ctx.fillRect(canvas.width - 30, canvas.height - 10, 20, 20); // 右
-      ctx.fillRect(canvas.width - 30, canvas.height - 50, 20, 20); // 下
+      // 上
+      ctx.fillRect(canvas.width - 40, canvas.height - 60, 20, 20);
+      // 左
+      ctx.fillRect(canvas.width - 60, canvas.height - 40, 20, 20);
+      // 右
+      ctx.fillRect(canvas.width - 20, canvas.height - 40, 20, 20);
+      // 下
+      ctx.fillRect(canvas.width - 40, canvas.height - 20, 20, 20);
     }
 
     // 按键控制
