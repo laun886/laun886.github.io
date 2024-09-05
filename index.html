@@ -4,13 +4,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>贪食蛇游戏优化版</title>
+  <title>贪食蛇游戏</title>
   <style>
     body {
       margin: 0;
       padding: 0;
       overflow: hidden;
-      transform: translateZ(0);
     }
 
     canvas {
@@ -34,8 +33,8 @@
 
     // 生成食物的位置
     function generateFood() {
-      let x = (Math.random() * canvas.width / 10) | 0 * 10;
-      let y = (Math.random() * canvas.height / 10) | 0 * 10;
+      let x = Math.floor(Math.random() * canvas.width / 10) * 10;
+      let y = Math.floor(Math.random() * canvas.height / 10) * 10;
       return { x, y };
     }
 
@@ -103,9 +102,8 @@
 
     // 检查是否碰到自身
     function checkCollision() {
-      const head = snake[0];
       for (let i = 1; i < snake.length; i++) {
-        if (head.x === snake[i].x && head.y === snake[i].y) {
+        if (snake[i].x === snake[0].x && snake[i].y === snake[0].y) {
           return true;
         }
       }
@@ -120,7 +118,7 @@
         return;
       }
       draw();
-      requestAnimationFrame(gameLoop);
+      setTimeout(gameLoop, 100);
     }
 
     gameLoop();
