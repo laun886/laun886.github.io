@@ -183,7 +183,7 @@
       draw();
       drawButtons();
       handleKeyPress();
-      requestAnimationFrame(gameLoop);
+      setTimeout(() => requestAnimationFrame(gameLoop), 16);
     }
 
     gameLoop();
