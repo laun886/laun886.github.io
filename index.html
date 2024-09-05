@@ -118,9 +118,8 @@
       return false;
     }
 
-    // 绘制半透明按键
-     function drawButtons() 
-     {
+    // 绘制半透明按键，更均匀分布
+    function drawButtons() {
       ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
       // 上
       ctx.fillRect(canvas.width - 40, canvas.height - 60, 20, 20);
@@ -137,22 +136,22 @@
       const rect = canvas.getBoundingClientRect();
       const x = event.clientX - rect.left;
       const y = event.clientY - rect.top;
-      if (x > canvas.width - 30 && x < canvas.width - 10 && y > canvas.height - 30 && y < canvas.height - 10) {
+      if (x > canvas.width - 40 && x < canvas.width - 20 && y > canvas.height - 60 && y < canvas.height - 40) {
         if (dy!== 10) {
           dx = 0;
           dy = -10;
         }
-      } else if (x > canvas.width - 50 && x < canvas.width - 30 && y > canvas.height - 10 && y < canvas.height + 10) {
+      } else if (x > canvas.width - 60 && x < canvas.width - 40 && y > canvas.height - 40 && y < canvas.height - 20) {
         if (dx!== 10) {
           dx = -10;
           dy = 0;
         }
-      } else if (x > canvas.width - 30 && x < canvas.width - 10 && y > canvas.height - 10 && y < canvas.height + 10) {
+      } else if (x > canvas.width - 20 && x < canvas.width && y > canvas.height - 40 && y < canvas.height - 20) {
         if (dx!== -10) {
           dx = 10;
           dy = 0;
         }
-      } else if (x > canvas.width - 30 && x < canvas.width - 10 && y > canvas.height - 50 && y < canvas.height - 30) {
+      } else if (x > canvas.width - 40 && x < canvas.width - 20 && y > canvas.height - 20 && y < canvas.height) {
         if (dy!== -10) {
           dx = 0;
           dy = 10;
@@ -169,7 +168,7 @@
       }
       draw();
       drawButtons();
-      setTimeout(gameLoop, 1000);
+      setTimeout(gameLoop, 1500);
     }
 
     gameLoop();
