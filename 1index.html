@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>贪食蛇游戏</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    canvas {
+      background-color: #000;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="gameCanvas" width="400" height="400"></canvas>
+  <script>
+    // 游戏画布和上下文
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // 蛇的初始位置和大小
+    let snake = [{ x: 200, y: 200 }];
+    let dx = 10;
+    let dy = 0;
+    let food = generateFood();
+    let score = 0;
+    let speed = 10; // 速度变量
+
+    // 生成食物的位置
+    function generateFood() {
+      let x, y;
+      do {
+        x = Math.floor(Math.random() * canvas.width / 10) * 10;
+        y = Math.floor(Math.random() * canvas.height / 10) * 10;
+      } while (snake.some(segment => segment.x === x && segment.y === y));
+      return { x, y };
+    }
+
+    // 绘制蛇和食物
+    function draw() {
+      // 只清除蛇和食物所在的区域
+      snake.forEach(segment => {
+        ctx.clearRect(segment.x, segment.y, 10, 10);
+      });
+      ctx.clearRect(food.x, food.y, 10, 10);
+      snake.forEach(segment => {
+        ctx.fillStyle = 'green';
+        ctx.fillRect(segment.x, segment.y, 10, 10);
+      });
+      ctx.fillStyle = 'red';
+      ctx.fillRect(food.x, food.y, 10, 10);
+      ctx.fillStyle = 'white';
+      ctx.font = '12px Arial';
+      ctx.fillText('得分：' + score, 10, 20);
+    }
+
+    // 更新蛇的位置，实现可穿过边界功能
+    function update() {
+      const canvasWidth = canvas.width;
+      const canvasHeight = canvas.height;
+      let head = { x: snake[0].x + dx * speed, y: snake[0].y + dy * speed };
+      if (head.x < 0) {
+        head.x = canvasWidth - 10;
+      } else if (head.x >= canvasWidth) {
+        head.x = 0;
+      }
+      if (head.y < 0) {
+        head.y = canvasHeight - 10;
+      } else if (head.y >= canvasHeight) {
+        head.y = 0;
+      }
+      snake.unshift(head);
+      if (head.x === food.x && head.y === food.y) {
+        food = generateFood();
+        score++;
+      } else {
+        snake.pop();
+      }
+    }
+
+    // 控制蛇的移动
+    let keyPressed = null;
+    document.addEventListener('keydown', function (event) {
+      keyPressed = event.keyCode;
+    });
+
+    function handleKeyPress() {
+      if (keyPressed === 37 && dx!== 10) {
+        dx = -10;
+        dy = 0;
+      } else if (keyPressed === 38 && dy!== 10) {
+        dx = 0;
+        dy = -10;
+      } else if (keyPressed === 39 && dx!== -10) {
+        dx = 10;
+        dy = 0;
+      } else if (keyPressed === 40 && dy!== -10) {
+        dx = 0;
+        dy = 10;
+      }
+      keyPressed = null;
+    }
+
+    // 检查是否碰到自身
+    function checkCollision() {
+      // 计算蛇头的包围盒
+      const headBox = {
+        x1: snake[0].x,
+        y1: snake[0].y,
+        x2: snake[0].x + 10,
+        y2: snake[0].y + 10
+      };
+      for (let i = 1; i < snake.length; i++) {
+        // 计算蛇身部分的包围盒
+        const segmentBox = {
+          x1: snake[i].x,
+          y1: snake[i].y,
+          x2: snake[i].x + 10,
+          y2: snake[i].y + 10
+        };
+        // 检查包围盒是否重叠
+        if (headBox.x1 < segmentBox.x2 && headBox.x2 > segmentBox.x1 && headBox.y1 < segmentBox.y2 && headBox.y2 > segmentBox.y1) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    // 绘制半透明按键，更均匀分布
+    function drawButtons() {
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+      // 上
+      ctx.fillRect(canvas.width - 40, canvas.height - 60, 20, 20);
+      // 左
+      ctx.fillRect(canvas.width - 60, canvas.height - 40, 20, 20);
+      // 右
+      ctx.fillRect(canvas.width - 20, canvas.height - 40, 20, 20);
+      // 下
+      ctx.fillRect(canvas.width - 40, canvas.height - 20, 20, 20);
+    }
+
+    // 按键控制
+    canvas.addEventListener('click', function (event) {
+      const rect = canvas.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      if (x > canvas.width - 40 && x < canvas.width - 20 && y > canvas.height - 60 && y < canvas.height - 40) {
+        if (dy!== 10) {
+          dx = 0;
+          dy = -10;
+        }
+      } else if (x > canvas.width - 60 && x < canvas.width - 40 && y > canvas.height - 40 && y < canvas.height - 20) {
+        if (dx!== 10) {
+          dx = -10;
+          dy = 0;
+        }
+      } else if (x > canvas.width - 20 && x < canvas.width && y > canvas.height - 40 && y < canvas.height - 20) {
+        if (dx!== -10) {
+          dx = 10;
+          dy = 0;
+        }
+      } else if (x > canvas.width - 40 && x < canvas.width - 20 && y > canvas.height - 20 && y < canvas.height) {
+        if (dy!== -10) {
+          dx = 0;
+          dy = 10;
+        }
+      }
+    });
+
+    // 游戏循环
+    function gameLoop() {
+      update();
+      if (checkCollision()) {
+        alert('游戏结束！最终得分：' + score);
+        return;
+      }
+      draw();
+      drawButtons();
+      handleKeyPress();
+      requestAnimationFrame(gameLoop);
+    }
+
+    gameLoop();
+  </script>
+</body>
+
+</html>
