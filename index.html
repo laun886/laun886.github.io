@@ -20,6 +20,7 @@
 
 <body>
   <canvas id="gameCanvas" width="400" height="400"></canvas>
+  <p id="scoreDisplay">得分：0</p>
   <script>
     // 游戏画布和上下文
     const canvas = document.getElementById('gameCanvas');
@@ -30,11 +31,15 @@
     let dx = 10;
     let dy = 0;
     let food = generateFood();
+    let score = 0;
 
     // 生成食物的位置
     function generateFood() {
-      let x = Math.floor(Math.random() * canvas.width / 10) * 10;
-      let y = Math.floor(Math.random() * canvas.height / 10) * 10;
+      let x, y;
+      do {
+        x = Math.floor(Math.random() * canvas.width / 10) * 10;
+        y = Math.floor(Math.random() * canvas.height / 10) * 10;
+      } while (snake.some(segment => segment.x === x && segment.y === y));
       return { x, y };
     }
 
@@ -65,6 +70,8 @@
       snake.unshift(head);
       if (head.x === food.x && head.y === food.y) {
         food = generateFood();
+        score++;
+        document.getElementById('scoreDisplay').innerText = '得分：' + score;
       } else {
         snake.pop();
       }
@@ -110,15 +117,24 @@
       return false;
     }
 
+    // 增加游戏难度级别
+    let difficultyLevel = 1;
+    function increaseDifficulty() {
+      if (score % 5 === 0) {
+        difficultyLevel++;
+      }
+    }
+
     // 游戏循环
     function gameLoop() {
       update();
+      increaseDifficulty();
       if (checkCollision()) {
-        alert('游戏结束！');
+        alert('游戏结束！最终得分：' + score);
         return;
       }
       draw();
-      setTimeout(gameLoop, 100);
+      setTimeout(gameLoop, 100 - difficultyLevel * 10);
     }
 
     gameLoop();
