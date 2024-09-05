@@ -2,150 +2,129 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>贪食蛇游戏优化版</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            transform: translateZ(0);
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>贪食蛇游戏优化版</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      transform: translateZ(0);
+    }
 
-        canvas {
-            background-color: #000;
-        }
-
-       .controls {
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-        }
-
-       .controls button {
-            width: 40px;
-            height: 40px;
-            margin: 5px;
-            border: 1px solid #ccc;
-            background-color: #ddd;
-        }
-    </style>
+    canvas {
+      background-color: #000;
+    }
+  </style>
 </head>
 
 <body>
-    <canvas id="gameCanvas" width="400" height="400"></canvas>
-    <div class="controls">
-        <button id="upBtn">↑</button>
-        <button id="downBtn">↓</button>
-        <button id="leftBtn">←</button>
-        <button id="rightBtn">→</button>
-    </div>
-    <script>
-        // 游戏画布和上下文
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
+  <canvas id="gameCanvas" width="400" height="400"></canvas>
+  <script>
+    // 游戏画布和上下文
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
 
-        // 蛇的初始位置和大小
-        let snake = [{ x: 200, y: 200 }];
-        let dx = 10;
-        let dy = 0;
-        let food = generateFood();
+    // 蛇的初始位置和大小
+    let snake = [{ x: 200, y: 200 }];
+    let dx = 10;
+    let dy = 0;
+    let food = generateFood();
 
-        // 生成食物的位置
-        function generateFood() {
-            let x, y;
-            do {
-                x = (Math.random() * canvas.width / 10) | 0 * 10;
-                y = (Math.random() * canvas.height / 10) | 0 * 10;
-            } while (snake.some(segment => segment.x === x && segment.y === y));
-            return { x, y };
+    // 生成食物的位置
+    function generateFood() {
+      let x = (Math.random() * canvas.width / 10) | 0 * 10;
+      let y = (Math.random() * canvas.height / 10) | 0 * 10;
+      return { x, y };
+    }
+
+    // 绘制蛇和食物
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      snake.forEach(segment => {
+        ctx.fillStyle = 'green';
+        ctx.fillRect(segment.x, segment.y, 10, 10);
+      });
+      ctx.fillStyle = 'red';
+      ctx.fillRect(food.x, food.y, 10, 10);
+    }
+
+    // 更新蛇的位置，实现可穿过边界功能
+    function update() {
+      let head = { x: snake[0].x + dx, y: snake[0].y + dy };
+      if (head.x < 0) {
+        head.x = canvas.width - 10;
+      } else if (head.x >= canvas.width) {
+        head.x = 0;
+      }
+      if (head.y < 0) {
+        head.y = canvas.height - 10;
+      } else if (head.y >= canvas.height) {
+        head.y = 0;
+      }
+      snake.unshift(head);
+      if (head.x === food.x && head.y === food.y) {
+        food = generateFood();
+      } else {
+        snake.pop();
+      }
+    }
+
+    // 控制蛇的移动
+    document.addEventListener('keydown', function (event) {
+      switch (event.keyCode) {
+        case 37: // 左
+          if (dx!== 10) {
+            dx = -10;
+            dy = 0;
+          }
+          break;
+        case 38: // 上
+          if (dy!== 10) {
+            dx = 0;
+            dy = -10;
+          }
+          break;
+        case 39: // 右
+          if (dx!== -10) {
+            dx = 10;
+            dy = 0;
+          }
+          break;
+        case 40: // 下
+          if (dy!== -10) {
+            dx = 0;
+            dy = 10;
+          }
+          break;
+      }
+    });
+
+    // 检查是否碰到自身
+    function checkCollision() {
+      const head = snake[0];
+      for (let i = 1; i < snake.length; i++) {
+        if (head.x === snake[i].x && head.y === snake[i].y) {
+          return true;
         }
+      }
+      return false;
+    }
 
-        // 绘制蛇和食物
-        function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            snake.forEach(segment => {
-                ctx.fillStyle = 'green';
-                ctx.fillRect(segment.x, segment.y, 10, 10);
-            });
-            ctx.fillStyle = 'red';
-            ctx.fillRect(food.x, food.y, 10, 10);
-        }
+    // 游戏循环
+    function gameLoop() {
+      update();
+      if (checkCollision()) {
+        alert('游戏结束！');
+        return;
+      }
+      draw();
+      requestAnimationFrame(gameLoop);
+    }
 
-        // 更新蛇的位置，实现可穿过边界功能并降低速度
-        let speedReducer = 2;
-        function update() {
-            let head = { x: snake[0].x + dx / speedReducer, y: snake[0].y + dy / speedReducer };
-            if (head.x < 0) {
-                head.x = canvas.width - 10;
-            } else if (head.x >= canvas.width) {
-                head.x = 0;
-            }
-            if (head.y < 0) {
-                head.y = canvas.height - 10;
-            } else if (head.y >= canvas.height) {
-                head.y = 0;
-            }
-            snake.unshift(head);
-            // 调整食物判断逻辑，考虑蛇移动距离变小的情况
-            if (Math.abs(head.x - food.x) < dx / speedReducer && Math.abs(head.y - food.y) < dy / speedReducer) {
-                food = generateFood();
-            } else {
-                snake.pop();
-            }
-        }
-
-        // 控制蛇的移动
-        document.getElementById('upBtn').addEventListener('click', () => {
-            if (dy!== 10 && dx === 0) {
-                dx = 0;
-                dy = -10;
-            }
-        });
-        document.getElementById('downBtn').addEventListener('click', () => {
-            if (dy!== -10 && dx === 0) {
-                dx = 0;
-                dy = 10;
-            }
-        });
-        document.getElementById('leftBtn').addEventListener('click', () => {
-            if (dx!== 10 && dy === 0) {
-                dx = -10;
-                dy = 0;
-            }
-        });
-        document.getElementById('rightBtn').addEventListener('click', () => {
-            if (dx!== -10 && dy === 0) {
-                dx = 10;
-                dy = 0;
-            }
-        });
-
-        // 检查是否碰到自身
-        function checkCollision() {
-            const head = snake[0];
-            for (let i = 1; i < snake.length; i++) {
-                if (head.x === snake[i].x && head.y === snake[i].y) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        // 游戏循环
-        function gameLoop() {
-            update();
-            if (checkCollision()) {
-                alert('游戏结束！');
-                return;
-            }
-            draw();
-            requestAnimationFrame(gameLoop);
-        }
-
-        gameLoop();
-    </script>
+    gameLoop();
+  </script>
 </body>
 
 </html>
