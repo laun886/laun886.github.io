@@ -20,7 +20,6 @@
 
 <body>
   <canvas id="gameCanvas" width="400" height="400"></canvas>
-  <p id="scoreDisplay">得分：0</p>
   <script>
     // 游戏画布和上下文
     const canvas = document.getElementById('gameCanvas');
@@ -52,6 +51,9 @@
       });
       ctx.fillStyle = 'red';
       ctx.fillRect(food.x, food.y, 10, 10);
+      ctx.fillStyle = 'white';
+      ctx.font = '12px Arial';
+      ctx.fillText('得分：' + score, 10, 20);
     }
 
     // 更新蛇的位置，实现可穿过边界功能
@@ -71,7 +73,6 @@
       if (head.x === food.x && head.y === food.y) {
         food = generateFood();
         score++;
-        document.getElementById('scoreDisplay').innerText = '得分：' + score;
       } else {
         snake.pop();
       }
@@ -125,6 +126,43 @@
       }
     }
 
+    // 绘制半透明按键
+    function drawButtons() {
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+      ctx.fillRect(canvas.width - 30, canvas.height - 30, 20, 20); // 上
+      ctx.fillRect(canvas.width - 50, canvas.height - 10, 20, 20); // 左
+      ctx.fillRect(canvas.width - 30, canvas.height - 10, 20, 20); // 右
+      ctx.fillRect(canvas.width - 30, canvas.height - 50, 20, 20); // 下
+    }
+
+    // 按键控制
+    canvas.addEventListener('click', function (event) {
+      const rect = canvas.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      if (x > canvas.width - 30 && x < canvas.width - 10 && y > canvas.height - 30 && y < canvas.height - 10) {
+        if (dy!== 10) {
+          dx = 0;
+          dy = -10;
+        }
+      } else if (x > canvas.width - 50 && x < canvas.width - 30 && y > canvas.height - 10 && y < canvas.height + 10) {
+        if (dx!== 10) {
+          dx = -10;
+          dy = 0;
+        }
+      } else if (x > canvas.width - 30 && x < canvas.width - 10 && y > canvas.height - 10 && y < canvas.height + 10) {
+        if (dx!== -10) {
+          dx = 10;
+          dy = 0;
+        }
+      } else if (x > canvas.width - 30 && x < canvas.width - 10 && y > canvas.height - 50 && y < canvas.height - 30) {
+        if (dy!== -10) {
+          dx = 0;
+          dy = 10;
+        }
+      }
+    });
+
     // 游戏循环
     function gameLoop() {
       update();
@@ -134,6 +172,7 @@
         return;
       }
       draw();
+      drawButtons();
       setTimeout(gameLoop, 100 - difficultyLevel * 10);
     }
 
