@@ -118,14 +118,6 @@
       return false;
     }
 
-    // 增加游戏难度级别
-    let difficultyLevel = 1;
-    function increaseDifficulty() {
-      if (score % 5 === 0) {
-        difficultyLevel++;
-      }
-    }
-
     // 绘制半透明按键
     function drawButtons() {
       ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
@@ -166,14 +158,13 @@
     // 游戏循环
     function gameLoop() {
       update();
-      increaseDifficulty();
       if (checkCollision()) {
         alert('游戏结束！最终得分：' + score);
         return;
       }
       draw();
       drawButtons();
-      setTimeout(gameLoop, 100 - difficultyLevel * 10);
+      setTimeout(gameLoop, 100);
     }
 
     gameLoop();
