@@ -31,6 +31,7 @@
     let dy = 0;
     let food = generateFood();
     let score = 0;
+    let speed = 10; // 速度变量
 
     // 生成食物的位置
     function generateFood() {
@@ -64,7 +65,7 @@
     function update() {
       const canvasWidth = canvas.width;
       const canvasHeight = canvas.height;
-      let head = { x: snake[0].x + dx, y: snake[0].y + dy };
+      let head = { x: snake[0].x + dx * speed, y: snake[0].y + dy * speed };
       if (head.x < 0) {
         head.x = canvasWidth - 10;
       } else if (head.x >= canvasWidth) {
@@ -183,7 +184,7 @@
       draw();
       drawButtons();
       handleKeyPress();
-      setTimeout(() => requestAnimationFrame(gameLoop), 16);
+      requestAnimationFrame(gameLoop);
     }
 
     gameLoop();
