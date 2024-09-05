@@ -17,16 +17,18 @@
             background-color: #000;
         }
 
-        .controls {
+       .controls {
             position: absolute;
             bottom: 10px;
             right: 10px;
         }
 
-        .controls button {
+       .controls button {
             width: 40px;
             height: 40px;
             margin: 5px;
+            border: 1px solid #ccc;
+            background-color: #ddd;
         }
     </style>
 </head>
@@ -86,7 +88,8 @@
                 head.y = 0;
             }
             snake.unshift(head);
-            if (head.x === food.x && head.y === food.y) {
+            // 调整食物判断逻辑，考虑蛇移动距离变小的情况
+            if (Math.abs(head.x - food.x) < dx / speedReducer && Math.abs(head.y - food.y) < dy / speedReducer) {
                 food = generateFood();
             } else {
                 snake.pop();
@@ -95,45 +98,27 @@
 
         // 控制蛇的移动
         document.getElementById('upBtn').addEventListener('click', () => {
-            if (dy !== 10) {
+            if (dy!== 10 && dx === 0) {
                 dx = 0;
                 dy = -10;
             }
         });
         document.getElementById('downBtn').addEventListener('click', () => {
-            if (dy !== -10) {
+            if (dy!== -10 && dx === 0) {
                 dx = 0;
                 dy = 10;
             }
         });
-        document.getElementById('leftBtn').addEventListener('click'), () => {
-            if (dx !== 10) {
+        document.getElementById('leftBtn').addEventListener('click', () => {
+            if (dx!== 10 && dy === 0) {
                 dx = -10;
                 dy = 0;
             }
         });
         document.getElementById('rightBtn').addEventListener('click', () => {
-            if (dx !== -10) {
+            if (dx!== -10 && dy === 0) {
                 dx = 10;
                 dy = 0;
-            }
-        });
-
-        // 监听键盘事件
-        document.addEventListener('keydown', function(e) {
-            e.preventDefault(); // 阻止默认行为
-            if (e.keyCode === 37 && dx !== 10) { // 左箭头键
-                dx = -10;
-                dy = 0;
-            } else if (e.keyCode === 39 && dx !== -10) { // 右箭头键
-                dx = 10;
-                dy = 0;
-            } else if (e.keyCode === 38 && dy !== 10) { // 上箭头键
-                dx = 0;
-                dy = -10;
-            } else if (e.keyCode === 40 && dy !== -10) { // 下箭头键
-                dx = 0;
-                dy = 10;
             }
         });
 
