@@ -44,7 +44,11 @@
 
     // 绘制蛇和食物
     function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      // 只清除蛇和食物所在的区域
+      snake.forEach(segment => {
+        ctx.clearRect(segment.x, segment.y, 10, 10);
+      });
+      ctx.clearRect(food.x, food.y, 10, 10);
       snake.forEach(segment => {
         ctx.fillStyle = 'green';
         ctx.fillRect(segment.x, segment.y, 10, 10);
@@ -58,15 +62,17 @@
 
     // 更新蛇的位置，实现可穿过边界功能
     function update() {
+      const canvasWidth = canvas.width;
+      const canvasHeight = canvas.height;
       let head = { x: snake[0].x + dx, y: snake[0].y + dy };
       if (head.x < 0) {
-        head.x = canvas.width - 10;
-      } else if (head.x >= canvas.width) {
+        head.x = canvasWidth - 10;
+      } else if (head.x >= canvasWidth) {
         head.x = 0;
       }
       if (head.y < 0) {
-        head.y = canvas.height - 10;
-      } else if (head.y >= canvas.height) {
+        head.y = canvasHeight - 10;
+      } else if (head.y >= canvasHeight) {
         head.y = 0;
       }
       snake.unshift(head);
@@ -79,39 +85,47 @@
     }
 
     // 控制蛇的移动
+    let keyPressed = null;
     document.addEventListener('keydown', function (event) {
-      switch (event.keyCode) {
-        case 37: // 左
-          if (dx!== 10) {
-            dx = -10;
-            dy = 0;
-          }
-          break;
-        case 38: // 上
-          if (dy!== 10) {
-            dx = 0;
-            dy = -10;
-          }
-          break;
-        case 39: // 右
-          if (dx!== -10) {
-            dx = 10;
-            dy = 0;
-          }
-          break;
-        case 40: // 下
-          if (dy!== -10) {
-            dx = 0;
-            dy = 10;
-          }
-          break;
-      }
+      keyPressed = event.keyCode;
     });
+
+    function handleKeyPress() {
+      if (keyPressed === 37 && dx!== 10) {
+        dx = -10;
+        dy = 0;
+      } else if (keyPressed === 38 && dy!== 10) {
+        dx = 0;
+        dy = -10;
+      } else if (keyPressed === 39 && dx!== -10) {
+        dx = 10;
+        dy = 0;
+      } else if (keyPressed === 40 && dy!== -10) {
+        dx = 0;
+        dy = 10;
+      }
+      keyPressed = null;
+    }
 
     // 检查是否碰到自身
     function checkCollision() {
+      // 计算蛇头的包围盒
+      const headBox = {
+        x1: snake[0].x,
+        y1: snake[0].y,
+        x2: snake[0].x + 10,
+        y2: snake[0].y + 10
+      };
       for (let i = 1; i < snake.length; i++) {
-        if (snake[i].x === snake[0].x && snake[i].y === snake[0].y) {
+        // 计算蛇身部分的包围盒
+        const segmentBox = {
+          x1: snake[i].x,
+          y1: snake[i].y,
+          x2: snake[i].x + 10,
+          y2: snake[i].y + 10
+        };
+        // 检查包围盒是否重叠
+        if (headBox.x1 < segmentBox.x2 && headBox.x2 > segmentBox.x1 && headBox.y1 < segmentBox.y2 && headBox.y2 > segmentBox.y1) {
           return true;
         }
       }
@@ -168,7 +182,8 @@
       }
       draw();
       drawButtons();
-      setTimeout(gameLoop, 1500);
+      handleKeyPress();
+      requestAnimationFrame(gameLoop);
     }
 
     gameLoop();
